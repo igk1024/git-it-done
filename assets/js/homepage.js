@@ -1,5 +1,10 @@
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
+
+//create a new variable called languageButtonsEl. Give it a value of the <div> with an id value of language-buttons.
+var languageButtonsEl = document.querySelector("div #language-buttons") 
+
+
 var getUserRepos = function(user) {
     // format the github api url
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
@@ -22,6 +27,19 @@ var getUserRepos = function(user) {
   });
   }
 
+  var getFeaturedRepos = function(language) {
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+  
+    fetch(apiUrl).then(function(response) {
+      if (response.ok) {
+        response.json().then(function(data) {
+          displayRepos(data.items, language);
+        });
+      } else {
+        alert("Error: " + response.statusText);
+      }
+    });
+  };
   // Test with my own username repo
  //getUserRepos("igk1024");
 
@@ -105,3 +123,18 @@ repoEl.appendChild(statusEl);
     }
   };
 
+  function buttonClickHandler(event) 
+  {
+    var language = event.target.getAttribute("data-language");
+    //console.log();
+    if (language) {
+      getFeaturedRepos(language);
+    
+      // clear old content
+      repoContainerEl.textContent = "";
+    }
+  }
+
+
+  //click event listener to the <div> element that will call a new buttonClickHandler() function
+  languageButtonsEl.addEventListener("click", buttonClickHandler);
